@@ -1,149 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Feed de Instagram</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="styles.css">
-
-    
-    <style>
-        /* Cuadrícula con 3 columnas en pantallas grandes */
-        .feed-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columnas */
-            gap: 10px;
-        }
-        .feed-grid img {
-            width: 100%;
-            border-radius: 5px;
-        }
-        /* Adaptabilidad a pantallas pequeñas */
-        @media (max-width: 768px) {
-            .feed-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        @media (max-width: 480px) {
-            .feed-grid {
-                grid-template-columns: repeat(1, 1fr);
-            }
-        }
-        /* Estilos para la vista de lista */
-        .feed-list .post {
-            width: 40%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            background: #fff;
-            margin-bottom: 15px;
-            
-        }
-        .feed-list .post img {
-            width: 100%;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feed de Instagram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  <style>
+    /* Cuadrícula con 3 columnas en pantallas grandes */
+    .feed-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+      gap: 10px;
+    }
+    .feed-grid img {
+      width: 100%;
+      
+    }
+    /* Adaptabilidad a pantallas pequeñas */
+    @media (max-width: 768px) {
+      .feed-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 480px) {
+      .feed-grid {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    }
+    /* Estilos para la vista de lista: centra las publicaciones y limita su ancho */
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .feed-list .post {
+      width: 100%;
+      max-width: 500px; /* Publicaciones más pequeñas */
+      padding: 10px;
+      border: 1px solid #ddd;
+      background: #fff;
+      margin-bottom: 15px;
+    }
+    .feed-list .post img {
+      width: 100%;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    /* Estilos para los iconos de navegación (cuadrícula y lista) */
+    .nav-pills .nav-link {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
 </head>
 <body class="bg-light">
 
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <h2>Instagram <i class="bi bi-instagram text-muted" style="font-size: 1rem;"></i></h2>
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#postModal">
-                    Create a new post
-                </button>
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-gear"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Accessibility</a></li>
-                        <li><a class="dropdown-item" href="#">Privacy and Data</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#">Log out</a></li>
-                    </ul>
-                </div>
-            </div>
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h2>
+        Instagram 
+        <i class="bi bi-instagram text-muted" style="font-size: 1rem;"></i>
+      </h2>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#postModal">
+          Create a new post
+        </button>
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-gear"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Accessibility</a></li>
+            <li><a class="dropdown-item" href="#">Privacy and Data</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="#">Log out</a></li>
+          </ul>
         </div>
-
-        <!-- Navegación de pestañas -->
-        <ul class="nav nav-pills mb-3 mt-3" id="feedTab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="grid-tab" data-bs-toggle="pill" href="#grid" role="tab">
-                    <i class="bi bi-grid"></i> <!-- Icono de cuadrícula -->
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="list-tab" data-bs-toggle="pill" href="#list" role="tab">
-                    <i class="bi bi-square-fill"></i> <!-- Icono de cuadrado sólido -->
-                </a>
-            </li>
-        </ul>
-
-        <!-- Contenido de las pestañas -->
-        <div class="tab-content">
-            <!-- Vista de cuadrícula -->
-            <div class="tab-pane fade show active" id="grid" role="tabpanel">
-                <div class="feed-grid">
-                    <img src="https://picsum.photos/300/300?random=1" alt="Post 1">
-                    <img src="https://picsum.photos/300/300?random=2" alt="Post 2">
-                    <img src="https://picsum.photos/300/300?random=3" alt="Post 3">
-                    <img src="https://picsum.photos/300/300?random=4" alt="Post 4">
-                    <img src="https://picsum.photos/300/300?random=5" alt="Post 5">
-                    <img src="https://picsum.photos/300/300?random=6" alt="Post 6">
-                </div>
-            </div>
-
-            <!-- Vista de lista -->
-            <div class="tab-pane fade" id="list" role="tabpanel">
-                <div class="feed-list">
-                    <div class="post">
-                        <h5 class="post-title">Post 1</h5>
-                        <img src="https://picsum.photos/600/300?random=1" alt="Post 1">
-                        <p class="post-likes">❤️ 120 Me gusta</p>
-                        <p><strong>Usuario1:</strong> Día genial</p>
-                    </div>
-                    <div class="post">
-                        <h5 class="post-title">Post 2</h5>
-                        <img src="https://picsum.photos/600/300?random=2" alt="Post 2">
-                        <p class="post-likes">❤️ 95 Me gusta</p>
-                        <p><strong>Usuario2:</strong> Un café</p>
-                    </div>
-                    <div class="post">
-                        <h5 class="post-title">Post 3</h5>
-                        <img src="https://picsum.photos/600/300?random=3" alt="Post 3">
-                        <p class="post-likes">❤️ 78 Me gusta</p>
-                        <p><strong>Usuario3:</strong> Paseo por el parque</p>
-                    </div>
-                    <div class="post">
-                        <h5 class="post-title">Post 4</h5>
-                        <img src="https://picsum.photos/600/300?random=4" alt="Post 4">
-                        <p class="post-likes">❤️ 102 Me gusta</p>
-                        <p><strong>Usuario4:</strong> Atardecer en la playa</p>
-                    </div>
-                    <div class="post">
-                        <h5 class="post-title">Post 5</h5>
-                        <img src="https://picsum.photos/600/300?random=5" alt="Post 5">
-                        <p class="post-likes">❤️ 134 Me gusta</p>
-                        <p><strong>Usuario5:</strong> Aventura en la montaña</p>
-                    </div>
-                    <div class="post">
-                        <h5 class="post-title">Post 6</h5>
-                        <img src="https://picsum.photos/600/300?random=6" alt="Post 6">
-                        <p class="post-likes">❤️ 99 Me gusta</p>
-                        <p><strong>Usuario6:</strong> Relajación total</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Navegación de pestañas con iconos -->
+    <ul class="nav nav-pills mb-3 mt-3" id="feedTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="grid-tab" data-bs-toggle="pill" href="#grid" role="tab">
+          <i class="bi bi-grid"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="list-tab" data-bs-toggle="pill" href="#list" role="tab">
+          <i class="bi bi-square-fill"></i>
+        </a>
+      </li>
+    </ul>
 
+    <!-- Contenido de las pestañas -->
+    <div class="tab-content">
+      <!-- Vista de cuadrícula -->
+      <div class="tab-pane fade show active" id="grid" role="tabpanel">
+        <div class="feed-grid">
+          <img src="https://picsum.photos/300/300?random=1" alt="Post 1">
+          <img src="https://picsum.photos/300/300?random=2" alt="Post 2">
+          <img src="https://picsum.photos/300/300?random=3" alt="Post 3">
+          <img src="https://picsum.photos/300/300?random=4" alt="Post 4">
+          <img src="https://picsum.photos/300/300?random=5" alt="Post 5">
+          <img src="https://picsum.photos/300/300?random=6" alt="Post 6">
+        </div>
+      </div>
+
+      <!-- Vista de lista -->
+      <div class="tab-pane fade" id="list" role="tabpanel">
+        <div class="feed-list">
+          <div class="post">
+            <h5 class="post-title">Post 1</h5>
+            <img src="https://picsum.photos/600/300?random=1" alt="Post 1">
+            <p class="post-likes">❤️ 120 Me gusta</p>
+            <p><strong>Usuario1:</strong> Día genial</p>
+          </div>
+          <div class="post">
+            <h5 class="post-title">Post 2</h5>
+            <img src="https://picsum.photos/600/300?random=2" alt="Post 2">
+            <p class="post-likes">❤️ 95 Me gusta</p>
+            <p><strong>Usuario2:</strong> Un café</p>
+          </div>
+          <div class="post">
+            <h5 class="post-title">Post 3</h5>
+            <img src="https://picsum.photos/600/300?random=3" alt="Post 3">
+            <p class="post-likes">❤️ 78 Me gusta</p>
+            <p><strong>Usuario3:</strong> Paseo por el parque</p>
+          </div>
+          <div class="post">
+            <h5 class="post-title">Post 4</h5>
+            <img src="https://picsum.photos/600/300?random=4" alt="Post 4">
+            <p class="post-likes">❤️ 102 Me gusta</p>
+            <p><strong>Usuario4:</strong> Atardecer en la playa</p>
+          </div>
+          <div class="post">
+            <h5 class="post-title">Post 5</h5>
+            <img src="https://picsum.photos/600/300?random=5" alt="Post 5">
+            <p class="post-likes">❤️ 134 Me gusta</p>
+            <p><strong>Usuario5:</strong> Aventura en la montaña</p>
+          </div>
+          <div class="post">
+            <h5 class="post-title">Post 6</h5>
+            <img src="https://picsum.photos/600/300?random=6" alt="Post 6">
+            <p class="post-likes">❤️ 99 Me gusta</p>
+            <p><strong>Usuario6:</strong> Relajación total</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para crear un nuevo post -->
+  <div class="modal fade" id="postModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create a new post</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label for="caption" class="form-label">Caption:</label>
+          <textarea class="form-control" id="caption" placeholder="Add the caption of your post here"></textarea>
+          <div class="mt-3">
+            <button class="btn btn-outline-secondary"><i class="bi bi-image"></i></button>
+            <button class="btn btn-outline-secondary"><i class="bi bi-geo-alt"></i></button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success">Publish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
